@@ -1,5 +1,5 @@
 # Project3
-Final Project
+
 Acequia Manager Guide
 This is a guideline for the Acequia Water Resource Simulator and the existing structures and functions that allow the simulation to carry forward and the student learning objectives and contributions to the simulator. 
 
