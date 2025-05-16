@@ -1,5 +1,6 @@
 #include "acequia_manager.h"
 #include <iostream>
+#include <algorithm>
 
 /*Instructions for this problem:
 
@@ -26,28 +27,72 @@
 */
 
 /*This will be how the solveProblems function is set up. The student may enter their on  */
-/*
+
 void solveProblems(AcequiaManager& manager)
 {
 	//the student can call the members of the canals object such as name of canal. sourceRegion, and destinationRegion
-	//This could be helpful in informing the students strategy to solve the problem
+	//        //This could be helpful in informing the students strategy to solve the problem
+	
+	auto regions = manager.getRegions();
 	auto canals = manager.getCanals();
-	//students may call to get Region and WaterSource objects to inform decisions 
+	
+	for (int hour = 0; hour < manager.SimulationMax; ++hour) {
+    		bool progress = false;
+		
+		// Sort regions by water deficit (descending order)
+		std::sort(regions.begin(), regions.end(), [](Region* a, Region* b) {
+			return (a->waterNeed - a->waterLevel) > (b->waterNeed - b->waterLevel);
+		});
 
+		for (auto& canal : canals) {
+			auto sourceRegion = canal->sourceRegion;
+   		    	auto destinationRegion = canal->destinationRegion;
 
-	while(!manager.isSolved && manager.hour!=manager.SimulationMax)
-	{	
-		//enter student code here
+			 if 	(sourceRegion->waterLevel > (sourceRegion->waterNeed + 1) &&
+            			destinationRegion->waterLevel < (destinationRegion->waterNeed + 1)) {
+				
+				double surplus = sourceRegion->waterLevel - sourceRegion->waterNeed;
+           			double deficit = destinationRegion->waterNeed - destinationRegion->waterLevel;
+            			double transferAmount = std::min(surplus, deficit);	
+				if (surplus > transferAmount && destinationRegion->waterLevel < destinationRegion->waterNeed) {
+					double flowRate = std::min(transferAmount / 10.0, 1.0);
+					canal->setFlowRate(flowRate);
+					canal->toggleOpen(true);
 
+					sourceRegion->updateWaterLevel(-transferAmount);
+			                destinationRegion->updateWaterLevel(transferAmount);
+					
+					progress = true;
+				}
+			}
+			else if (!sourceRegion->isInDrought) {
+				double surplus = sourceRegion->waterLevel - (sourceRegion->waterCapacity * 0.2);
+				double deficit = (destinationRegion->waterNeed + 1) - destinationRegion->waterLevel;
+		            	double transferAmount = std::min(surplus, deficit);
+				if (sourceRegion->waterLevel > sourceRegion->waterNeed &&
+                			sourceRegion->waterLevel < (sourceRegion->waterNeed + transferAmount)) {
+					                canal->toggleOpen(false);
 
-		manager.nexthour();
+				} else if (surplus > transferAmount && destinationRegion->waterLevel < destinationRegion->waterNeed) {
+					double flowRate = std::min(transferAmount / 10.0, 1.0);
+					canal->setFlowRate(flowRate);
+					canal->toggleOpen(true);
+					
+					sourceRegion->updateWaterLevel(-transferAmount);
+					destinationRegion->updateWaterLevel(transferAmount);
+					progress = true;
+				}
+			}
+			else {
+				canal->toggleOpen(false);
+			}
+			manager.nexthour();
+		}		
+
 	}
 }
-*/
-
-
 /*example 2 format*/
-
+/*
 void solveProblems(AcequiaManager& manager)
 {
 	auto canals = manager.getCanals();
@@ -79,7 +124,7 @@ void solveProblems(AcequiaManager& manager)
 	}
 }
 
-
+*/
 /*example 2*/
 /*
 void solveProblems(AcequiaManager& manager)
