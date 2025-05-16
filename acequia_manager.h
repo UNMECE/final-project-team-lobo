@@ -45,6 +45,7 @@ class WaterSource{
 	public:
 		std::string name;
 		double volume; 		//perhaps adding a volume variable that changes water level during a transfer
+//		double volume; 		//perhaps adding a volume variable that changes water level during a transfer
 		WaterSourceType type;
 		double waterLevel; //current water level (acre-foot)
 //		std::vector<Region *> suppliedRegions; //Regions supplied by this source
@@ -54,6 +55,11 @@ class WaterSource{
 		//new functions for adding a list of canals that tap into this waterSource
 		std::vector<Canal *> canals; //the canals that move water from one region to another
 		void addCanal(Canal *canal);
+//		void addSuppliedRegion(Region* region);
+		
+		//new functions for adding a list of canals that tap into this waterSource
+//		std::vector<Canal *> canals; //the canals that move water from one region to another
+//		void addCanal(Canal *canal);
 
 		void updateWaterLevel(double change);
 };
@@ -122,3 +128,5 @@ class AcequiaManager{
 void solveProblems(AcequiaManager& manager);
 
 #endif
+#endif
+
